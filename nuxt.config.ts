@@ -7,7 +7,6 @@ export default defineNuxtConfig({
   modules: [
     'nuxt-icon',   
     '@pinia/nuxt',
-    '@pinia-plugin-persistedstate/nuxt',
     '@nuxtjs/tailwindcss',
     
   ],
