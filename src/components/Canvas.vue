@@ -1,30 +1,34 @@
 <template>
-  <div>
-   
-
-    <div
-      v-if="originalArray"
-      class="flex flex-wrap max-w-[400px] max-h-[200px] overflow-auto"
-    >
-      <span
-        v-for="pixel in [255, 222, 3, 14, 15, 36, 15, 15, 28]"
-        class="border-red px-2"
-        >{{ pixel }}</span
+  
+    <div class="flex flex-col justify-center gap-[20px]">
+      <canvas
+        id="originalCanvas"
+        class="border border-blue-800"
+        @mousemove="onMouseMove"
       >
+      </canvas>
+      <div v-if="computedPixels">
+        <div>{{ computedPixels[currIndex] }}</div>
+        <div class="flex flex-wrap w-[320px] justify-center">
+          <div
+            class="w-[20px] h-[20px] border border-gray-900"
+            :class="`${index === currIndex ? 'bg-blue-800' : ''} `"
+            v-for="(item, index) in computedPixels"
+            :key="index"
+            @mouseover="onMouseOver(index)"
+          ></div>
+        </div>
+      </div>
     </div>
-  </div>
+ 
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from "~/stores/user";
-import { computePointInCanvas } from "~/utils/element";
-
-const props = defineProps(["canvasRef", "handleMouseMove"]);
-const { canvasRef, handleMouseMove } = toRefs(props);
-
-let canvasRef2 = ref(null);
-const userStore = useUserStore();
-
-let originalArray = ref<ImageData | null>(null);
-
+const props = defineProps([
+  "onMouseMove",
+  "onMouseOver",
+  "computedPixels",
+  "currIndex",
+]);
+const { onMouseMove, onMouseOver, computedPixels, currIndex } = toRefs(props);
 </script>

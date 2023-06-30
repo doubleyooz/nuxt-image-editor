@@ -1,9 +1,9 @@
-export const computePointInCanvas = (canvasRef: Ref<HTMLCanvasElement | null>, clientX: number, clientY: number) => {
-    if (!canvasRef.value) {
+export const computePointInCanvas = (canvasRef: HTMLCanvasElement | null, clientX: number, clientY: number) => {
+    if (!canvasRef) {
         return null;
     }
-    const boundingRect = canvasRef.value.getBoundingClientRect();
-
+    const boundingRect = canvasRef.getBoundingClientRect();
+    //console.log(boundingRect)
     return {
         x: clientX - boundingRect.left,
         y: clientY - boundingRect.top,
