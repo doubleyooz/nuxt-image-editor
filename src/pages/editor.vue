@@ -1,28 +1,41 @@
 <template>
-  <div class="flex pt-[50px] pl-[50px]">
+  <div class="flex pt-[50px] pl-[50px] items-center">
     <Canvas
       :onMouseOver="onMouseOver"
       :computedPixels="computedPixels"
       :currIndex="currIndex"
       :onMouseMove="onMouseMove"
+      canvasId="originalCanvas"
     />
+
+    <button class="bg-red-400 text-white hover:bg-red-500 hover:border px-2 h-8 rounded" @click="grayFilter(contextRef)">GRAY FILTER</button>
+    <Canvas
+      :onMouseOver="onMouseOver"
+      :computedPixels="computedPixels"
+      :currIndex="currIndex"
+      :onMouseMove="onMouseMove"
+      canvasId="updatedCanvas"
+    />
+  
   </div>
 </template>
 
 <script setup lang="ts">
 import { useUserStore } from "~/stores/user";
 import Canvas from "~/components/Canvas.vue";
+import { grayFilter } from "~/utils/filter";
 
 const userStore = useUserStore();
-const contextRef = ref<any>(null);
+const contextRef = ref<CanvasRenderingContext2D | null>(null);
 const canvasRef = ref<HTMLCanvasElement | null>(null);
+const updatedCanvas = ref<HTMLCanvasElement | null>(null);
 
 console.log(userStore.images);
-const updatedCanvas = ref<HTMLCanvasElement | null>(null);
 let currIndex = ref<number>(0);
 
 let computedPixels = computed(() => {
   if (!contextRef.value) return;
+  console.log(typeof contextRef, contextRef)
 
   console.log("canvas test", contextRef.value.getImageData(0, 0, 20, 20));
   return contextRef.value
@@ -57,8 +70,11 @@ onMounted(() => {
 
     canvasRef.value!.width = image.width < 300 ? image.width : 300;
     canvasRef.value!.height = image.height < 300 ? image.height : 300;
+    //updatedCanvas.value.width = canvasRef.value!.width;
+    //updatedCanvas.value.height
 
-    contextRef.value.drawImage(
+
+    contextRef.value!.drawImage(
       image,
       0,
       0,
@@ -86,7 +102,7 @@ const onMouseMove = (e: MouseEvent) => {
   if (!point) return;
   console.log(point);
   console.log({
-    ...contextRef.value.getImageData(point.x, point.y, 1, 1).data,
+    ...contextRef.value!.getImageData(point.x, point.y, 1, 1).data,
   });
 };
 

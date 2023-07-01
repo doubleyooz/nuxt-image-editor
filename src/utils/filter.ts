@@ -1,8 +1,9 @@
-const grayFilter = (canvas: globalThis.Ref<HTMLCanvasElement | null>) => {
-    if (!canvas.value) return;
-    const ctx = canvas.value.getContext("2d");
+const grayFilter = (ctx: CanvasRenderingContext2D | null) => {
+    console.log(typeof ctx, ctx);
+   
+    if (!ctx) return;
 
-    const originalArray = ctx!.getImageData(0, 0, 400, 400);
+    const originalArray = ctx.getImageData(0, 0, 400, 400);
     for (let y = 0; y < originalArray.height; y++) {
         for (let x = 0; x < originalArray.width; x++) {
             let i = y * 4 * originalArray.width + x * 4;
