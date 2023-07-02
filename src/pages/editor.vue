@@ -4,7 +4,7 @@
 
     <button
       class="bg-red-400 text-white hover:bg-red-500 hover:border px-2 rounded"
-      @click="grayFilter(contextRef2)"
+      @click="grayFilter(contextRef, contextRef2)"
     >
       GRAY FILTER
     </button>
