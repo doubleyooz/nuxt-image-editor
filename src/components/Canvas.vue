@@ -26,13 +26,43 @@
 
 <script setup lang="ts">
 import { rgbToHex } from "~/utils/element";
-const props = defineProps([
-  "onMouseMove",
-  "onMouseOver",
-  "computedPixels",
-  "currIndex",
-  "canvasId",
-]);
-const { onMouseMove, onMouseOver, computedPixels, canvasId, currIndex } =
-  toRefs(props);
+
+const props = defineProps(["contextRef", "canvasRef", "canvasId"]);
+const { contextRef, canvasRef, canvasId } = toRefs(props);
+let currIndex = ref<number>(0);
+
+let computedPixels = computed(() => {
+  if (!contextRef) return;
+  if (!contextRef.value) return;
+
+  return contextRef.value
+    .getImageData(0, 0, 12, 12)
+    .data.reduce((result: any, number: number, index: number) => {
+      const groupIndex = Math.floor(index / 4); // Group size is 4 in this example
+      if (!result[groupIndex]) {
+        result[groupIndex] = {};
+      }
+      result[groupIndex][index % 4] = number;
+      return result;
+    }, []);
+});
+
+const onMouseOver = (index: number) => (currIndex.value = index);
+
+const onMouseMove = (e: MouseEvent) => {
+  if (!canvasRef) return;
+ 
+  const { clientX, clientY } = e;
+  
+  let point = computePointInCanvas(
+    canvasRef.value as HTMLCanvasElement,
+    clientX,
+    clientY
+  );
+  if (!point) return;
+  console.log(point);
+  console.log({
+    ...contextRef!.value.getImageData(point.x, point.y, 1, 1).data,
+  });
+};
 </script>

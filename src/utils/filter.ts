@@ -1,8 +1,6 @@
 const grayFilter = (ctx: CanvasRenderingContext2D | null) => {
-    console.log(typeof ctx, ctx);
-   
     if (!ctx) return;
-
+    
     const originalArray = ctx.getImageData(0, 0, 400, 400);
     for (let y = 0; y < originalArray.height; y++) {
         for (let x = 0; x < originalArray.width; x++) {
@@ -17,7 +15,9 @@ const grayFilter = (ctx: CanvasRenderingContext2D | null) => {
             originalArray.data[i + 2] = avg;
         }
     }
-    ctx!.putImageData(
+    console.log(ctx);
+    console.log(originalArray)
+    ctx.putImageData(
         originalArray,
         0,
         0,

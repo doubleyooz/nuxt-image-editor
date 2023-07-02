@@ -1,22 +1,14 @@
 <template>
-  <div class="flex pt-[50px] pl-[50px] items-center">
-    <Canvas
-      :onMouseOver="onMouseOver"
-      :computedPixels="computedPixels"
-      :currIndex="currIndex"
-      :onMouseMove="onMouseMove"
-      canvasId="originalCanvas"
-    />
+  <div class="flex pt-[50px] pl-[50px] items-center gap-2">
+    <Canvas  :canvasRef="canvasRef"  :contextRef="contextRef" canvasId="canvasRef" />
 
-    <button class="bg-red-400 text-white hover:bg-red-500 hover:border px-2 h-8 rounded" @click="grayFilter(contextRef)">GRAY FILTER</button>
-    <Canvas
-      :onMouseOver="onMouseOver"
-      :computedPixels="computedPixels"
-      :currIndex="currIndex"
-      :onMouseMove="onMouseMove"
-      canvasId="updatedCanvas"
-    />
-  
+    <button
+      class="bg-red-400 text-white hover:bg-red-500 hover:border px-2 rounded"
+      @click="grayFilter(contextRef2)"
+    >
+      GRAY FILTER
+    </button>
+    <Canvas :canvasRef="canvasRef2" :contextRef="contextRef2" canvasId="canvasRef2" />
   </div>
 </template>
 
@@ -28,33 +20,18 @@ import { grayFilter } from "~/utils/filter";
 const userStore = useUserStore();
 const contextRef = ref<CanvasRenderingContext2D | null>(null);
 const canvasRef = ref<HTMLCanvasElement | null>(null);
-const updatedCanvas = ref<HTMLCanvasElement | null>(null);
+const canvasRef2 = ref<HTMLCanvasElement | null>(null);
+const contextRef2 = ref<CanvasRenderingContext2D | null>(null);
 
 console.log(userStore.images);
-let currIndex = ref<number>(0);
 
-let computedPixels = computed(() => {
-  if (!contextRef.value) return;
-  console.log(typeof contextRef, contextRef)
-
-  console.log("canvas test", contextRef.value.getImageData(0, 0, 20, 20));
-  return contextRef.value
-    .getImageData(0, 0, 12, 12)
-    .data.reduce((result: any, number: number, index: number) => {
-      const groupIndex = Math.floor(index / 4); // Group size is 4 in this example
-      if (!result[groupIndex]) {
-        result[groupIndex] = {};
-      }
-      result[groupIndex][index % 4] = number;
-      return result;
-    }, []);
-});
 /*
 watch(computedPixels, (newValue, updatedValue) => {
   console.log("newValue", newValue);
   console.log("updatedValue", updatedValue);
 });
 */
+
 onMounted(() => {
   const image = new Image();
   //console.log("contextRef", contextRef.value);
@@ -62,17 +39,18 @@ onMounted(() => {
   image.src = "_nuxt/assets/temp.jpg";
 
   image.onload = () => {
-    canvasRef.value = document.getElementById(
-      "originalCanvas"
+    canvasRef.value = document.getElementById("canvasRef") as HTMLCanvasElement;
+    canvasRef2.value = document.getElementById(
+      "canvasRef2"
     ) as HTMLCanvasElement;
-    if (!canvasRef.value) return;
+    if (!canvasRef.value || !canvasRef2.value) return;
     contextRef.value = canvasRef.value.getContext("2d");
+    contextRef2.value = canvasRef2.value.getContext("2d");
 
-    canvasRef.value!.width = image.width < 300 ? image.width : 300;
-    canvasRef.value!.height = image.height < 300 ? image.height : 300;
-    //updatedCanvas.value.width = canvasRef.value!.width;
-    //updatedCanvas.value.height
-
+    canvasRef.value.width = image.width < 300 ? image.width : 300;
+    canvasRef.value.height = image.height < 300 ? image.height : 300;
+    canvasRef2.value.width = canvasRef.value.width;
+    canvasRef2.value.height = canvasRef.value.height;
 
     contextRef.value!.drawImage(
       image,
@@ -91,23 +69,4 @@ onMounted(() => {
     //console.log(originalArray.value);
   };
 });
-
-const onMouseMove = (e: MouseEvent) => {
-  const { clientX, clientY } = e;
-  let point = computePointInCanvas(
-    canvasRef.value as HTMLCanvasElement,
-    clientX,
-    clientY
-  );
-  if (!point) return;
-  console.log(point);
-  console.log({
-    ...contextRef.value!.getImageData(point.x, point.y, 1, 1).data,
-  });
-};
-
-const onMouseOver = (index: number) => {
-  console.log(computedPixels.value[currIndex.value]);
-  currIndex.value = index;
-};
 </script>
